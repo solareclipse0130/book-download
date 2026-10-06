@@ -1,0 +1,9 @@
+# 书单示例 — 每行一本，中英文均可，# 开头行跳过
+The Mom Test
+$100M Offers
+The Lean Startup
+Contagious Jonah Berger
+Hooked Nir Eyal
+流量池
+超级符号就是超级创意
+Influence Robert Cialdini

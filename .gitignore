@@ -1,0 +1,5 @@
+.env
+.zlib_cookies.json
+downloads/
+__pycache__/
+*.pyc
