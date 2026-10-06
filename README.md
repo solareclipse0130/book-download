@@ -6,29 +6,37 @@
 
 ## 中文
 
-Claude Code skill + Python 脚本，从 Z-Library 批量下载电子书。  
-使用 Firefox headless 绕过 DiamWall 反爬机制 —— **国内无需 VPN 可直接使用**。
+从 Z-Library 批量下载电子书。使用 Firefox headless 绕过 DiamWall 反爬机制 —— **国内无需 VPN 可直接使用**。
 
-### 原理
+有两种使用方式：
 
-- Z-Library（`z-library.sk`）国内可访问，但 DiamWall 会拦截所有基于 Chromium 的无头浏览器
-- Firefox headless 因指纹不同可通过 DiamWall
-- 搜索结果里的 `<z-bookcard download="/dl/...">` 属性直接包含下载链接，无需进入详情页
+| 方式 | 适合场景 |
+|------|----------|
+| **方式一：Claude Code skill**（推荐） | 已有 Claude Code，直接用自然语言下载 |
+| **方式二：直接运行脚本** | 不用 Claude Code，命令行独立使用 |
 
-### 安装
+### 方式一：作为 Claude Code skill
 
 ```bash
-# 1. 安装依赖
+# 复制 skill 文件到 Claude 全局 agents 目录
+cp .claude/agents/book-download.md ~/.claude/agents/
+```
+
+之后在任意项目里对 Claude 说"帮我下载《疯传》"，Claude 会自动调用 `zlib_download.py` 完成搜索和下载。
+
+### 方式二：直接运行脚本
+
+**安装依赖（首次）：**
+```bash
 pip install playwright
 python -m playwright install firefox
+```
 
-# 2. 创建 .env 填写 Z-Library 账号
-#    （免费注册：https://z-library.sk/registration）
+**创建 `.env` 填写账号（免费注册：https://z-library.sk/registration）：**
+```bash
 echo "ZLIBRARY_EMAIL=你的邮箱" >> .env
 echo "ZLIBRARY_PASSWORD=你的密码" >> .env
 ```
-
-### 使用
 
 **单本（交互选择）：**
 ```bash
@@ -47,13 +55,11 @@ python zlib_download.py --batch booklist.txt -o ~/books
 
 `booklist.txt` 格式：每行一本书名（中英文均可），`#` 开头为注释行。
 
-### 作为 Claude Code skill 使用
+### 原理
 
-```bash
-cp .claude/agents/book-download.md ~/.claude/agents/
-```
-
-放入后，跟 Claude 说"帮我下载《XX》"即可自动触发。
+- Z-Library（`z-library.sk`）国内可访问，但 DiamWall 会拦截所有基于 Chromium 的无头浏览器
+- Firefox headless 因指纹不同可通过 DiamWall
+- 搜索结果里的 `<z-bookcard download="/dl/...">` 属性直接包含下载链接，无需进入详情页
 
 ### 注意事项
 
@@ -77,29 +83,37 @@ cp .claude/agents/book-download.md ~/.claude/agents/
 
 ## English
 
-Claude Code skill + Python script for batch ebook downloads from Z-Library.  
+Batch ebook downloader for Z-Library.  
 Uses Firefox headless to bypass DiamWall bot protection — **works from mainland China without a VPN**.
 
-### How it works
+Two ways to use it:
 
-- Z-Library (`z-library.sk`) is accessible from China, but DiamWall blocks all Chromium-based headless browsers
-- Firefox headless passes DiamWall because of a different browser fingerprint
-- Search results expose `<z-bookcard download="/dl/...">` attributes with direct download links — no detail-page visits needed
+| Mode | Best for |
+|------|----------|
+| **Mode 1: Claude Code skill** (recommended) | Already using Claude Code — download books in plain language |
+| **Mode 2: Run the script directly** | No Claude Code — use it as a standalone CLI tool |
 
-### Setup
+### Mode 1: As a Claude Code skill
 
 ```bash
-# 1. Install dependencies
+cp .claude/agents/book-download.md ~/.claude/agents/
+```
+
+Then tell Claude "download *The Mom Test* for me" from any project — it will call `zlib_download.py` automatically.
+
+### Mode 2: Run the script directly
+
+**Install dependencies (first time):**
+```bash
 pip install playwright
 python -m playwright install firefox
+```
 
-# 2. Create .env with your Z-Library credentials
-#    (register free at https://z-library.sk/registration)
+**Create `.env` with your credentials (free registration: https://z-library.sk/registration):**
+```bash
 echo "ZLIBRARY_EMAIL=your@email.com" >> .env
 echo "ZLIBRARY_PASSWORD=yourpassword" >> .env
 ```
-
-### Usage
 
 **Single book (interactive):**
 ```bash
@@ -118,13 +132,11 @@ python zlib_download.py --batch booklist.txt -o ~/books
 
 `booklist.txt` format: one title per line (Chinese or English), lines starting with `#` are skipped.
 
-### As a Claude Code skill
+### How it works
 
-```bash
-cp .claude/agents/book-download.md ~/.claude/agents/
-```
-
-Claude will automatically invoke it when you ask to download books.
+- Z-Library (`z-library.sk`) is accessible from China, but DiamWall blocks all Chromium-based headless browsers
+- Firefox headless passes DiamWall because of a different browser fingerprint
+- Search results expose `<z-bookcard download="/dl/...">` attributes with direct download links — no detail-page visits needed
 
 ### Limits & notes
 
