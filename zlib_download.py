@@ -307,24 +307,36 @@ async def run_batch(book_file: Path, lang: str, ext: str, out_dir: Path):
             await browser.close()
             return
 
+        # 已下载文件名集合（用于跳过）
+        done_stems = {p.stem.split(" (")[0].strip() for p in out_dir.glob("*") if p.is_file()}
+
         for title in titles:
-            print(f'\n─── {title} ───')
-            page = await ctx.new_page()
-            results = await search(page, title, lang=lang, ext=ext, count=3)
-            if not results:
-                print("  未找到结果，跳过")
-                await page.close()
+            # 跳过已下载（文件名开头包含书名关键词）
+            if any(title.lower() in s.lower() or s.lower() in title.lower() for s in done_stems):
+                print(f'\n─── {title} ─── 已下载，跳过')
                 continue
 
-            # 取第一条，优先用搜索结果里的直链
-            book = results[0]
-            print(f"  命中: {book['title']} [{book.get('info','')}]")
-            dl_url = book.get("dl_url") or await get_download_url(page, book["url"])
-            if dl_url:
-                await download_file(page, dl_url, book["title"], out_dir)
-            else:
-                print(f"  无下载链接: {book['url']}")
-            await page.close()
+            print(f'\n─── {title} ───')
+            page = await ctx.new_page()
+            try:
+                results = await search(page, title, lang=lang, ext=ext, count=3)
+                if not results:
+                    print("  未找到结果，跳过")
+                    await page.close()
+                    continue
+
+                # 取第一条，优先用搜索结果里的直链
+                book = results[0]
+                print(f"  命中: {book['title']} [{book.get('info','')}]")
+                dl_url = book.get("dl_url") or await get_download_url(page, book["url"])
+                if dl_url:
+                    await download_file(page, dl_url, book["title"], out_dir)
+                else:
+                    print(f"  无下载链接: {book['url']}")
+            except Exception as e:
+                print(f"  下载失败，跳过: {e}")
+            finally:
+                await page.close()
             await asyncio.sleep(4)
 
         await browser.close()
